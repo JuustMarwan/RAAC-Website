@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">محول وحدات الثلاجات</title>
+    <title id="pageTitle">أنظمة التبريد والتكييف</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Cairo', sans-serif; /* Default to Arabic font */
+            font-family: 'Cairo', sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
         html[lang="en"] body {
@@ -17,258 +17,405 @@
 
         /* Light Mode Default Styles */
         body {
-            background-color: #f0f4f8;
-            color: #1f2937;
+            background-color: #f0f4f8; /* cool-gray-100 */
+            color: #1f2937; /* cool-gray-800 */
         }
-        .converter-section {
+        .tool-section {
             background-color: #ffffff;
-            border-color: #e5e7eb;
+            border-color: #e5e7eb; /* cool-gray-200 */
+            opacity: 0; 
+            transform: translateY(10px); 
+            animation: fadeInSection 0.5s ease-out forwards;
+        }
+        .tool-section.visible { 
+            opacity: 1;
+            transform: translateY(0);
         }
         .tab-button {
-            color: #4a5568;
+            color: #4b5563; /* cool-gray-600 */
             border-bottom-color: transparent;
+            transition: color 0.3s ease, border-color 0.3s ease;
         }
         .tab-button.active-tab {
-            color: #2563eb;
-            border-bottom-color: #2563eb;
+            color: #2563eb; /* blue-600 */
+            border-bottom-color: #2563eb; /* blue-600 */
         }
-        .form-input {
+        .form-input, .form-select {
             background-color: #ffffff;
-            border-color: #d1d5db;
-            color: #1f2937;
+            border-color: #d1d5db; /* cool-gray-300 */
+            color: #1f2937; /* cool-gray-800 */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
         }
-        .form-input:focus {
-            border-color: #2563eb;
+        .form-input:focus, .form-select:focus {
+            border-color: #2563eb; /* blue-600 */
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
         }
         .form-label {
-            color: #374151;
+            color: #374151; /* cool-gray-700 */
         }
-        .convert-button {
-            background-color: #2563eb;
+        .action-button {
+            background-color: #2563eb; /* blue-600 */
             color: white;
+            border-width: 1px;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            padding-top: 0.625rem; 
+            padding-bottom: 0.625rem;
+            transition: all 0.2s ease-in-out;
+            border-color: #1d4ed8; /* blue-700 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .convert-button:hover {
-            background-color: #1d4ed8;
+        .action-button:hover {
+            background-color: #1d4ed8; /* blue-700 */
+            border-color: #1e40af; /* blue-800 */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            transform: translateY(-1px);
+        }
+        .action-button:active {
+            transform: translateY(0px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .result-box {
-            background-color: #eef2ff;
-            border-color: #c7d2fe;
-            color: #3730a3;
+            background-color: #eef2ff; /* indigo-50 */
+            border-color: #c7d2fe; /* indigo-200 */
+            color: #3730a3; /* indigo-800 */
+            opacity: 0;
+            animation: fadeInResult 0.4s ease-out forwards;
+        }
+        .result-box.visible {
+             opacity: 1;
         }
         .info-text {
-            color: #6b7280;
+            color: #6b7280; /* cool-gray-500 */
+            font-size: 0.75rem; /* text-xs */
+            line-height: 1rem; /* leading-4 */
+        }
+        .header-container { 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem; /* mb-8 */
+        }
+        .header-text-content { 
+            text-align: center; 
+            flex-grow: 1; 
+        }
+        html[dir="rtl"] .header-text-content {
+            text-align: right;
+        }
+        html[dir="ltr"] .header-text-content {
+            text-align: left;
         }
         .header-title {
-            color: #2563eb;
+            color: #2563eb; /* blue-600 */
         }
         .header-subtitle {
-            color: #4b5567;
+            color: #4b5563; /* cool-gray-600 */
+        }
+        .header-controls { 
+            display: flex;
+            gap: 0.5rem; /* space-x-2 */
         }
         .footer-text {
-            color: #6b7280;
+            color: #6b7280; /* cool-gray-500 */
         }
-        .control-button { /* Common style for theme and lang buttons */
-            background-color: #e5e7eb;
-            color: #374151;
-            transition: background-color 0.2s ease, color 0.2s ease;
+        .control-button {
+            background-color: #e5e7eb; /* cool-gray-200 */
+            color: #374151; /* cool-gray-700 */
+            transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
         }
         .control-button:hover {
-            background-color: #d1d5db;
+            background-color: #d1d5db; /* cool-gray-300 */
+            transform: scale(1.05);
         }
-
 
         /* Dark Mode Styles */
         html.dark body {
-            background-color: #1f2937;
-            color: #d1d5db;
+            background-color: #1f2937; /* cool-gray-800 */
+            color: #d1d5db; /* cool-gray-300 */
         }
-        html.dark .converter-section {
-            background-color: #374151;
-            border-color: #4b5567;
+        html.dark .tool-section {
+            background-color: #374151; /* cool-gray-700 */
+            border-color: #4b5563; /* cool-gray-600 */
         }
         html.dark .tab-button {
-            color: #9ca3af;
+            color: #9ca3af; /* cool-gray-400 */
         }
         html.dark .tab-button.active-tab {
-            color: #60a5fa;
-            border-bottom-color: #60a5fa;
+            color: #60a5fa; /* blue-400 */
+            border-bottom-color: #60a5fa; /* blue-400 */
         }
-        html.dark .form-input {
-            background-color: #4b5567;
-            border-color: #52525b;
-            color: #f3f4f6;
+        html.dark .form-input, html.dark .form-select {
+            background-color: #4b5563; /* cool-gray-600 */
+            border-color: #52525b; /* true-gray-500 */
+            color: #f3f4f6; /* cool-gray-100 */
         }
         html.dark .form-input::placeholder {
-            color: #9ca3af;
+            color: #9ca3af; /* cool-gray-400 */
         }
-        html.dark .form-input:focus {
-            border-color: #60a5fa;
+        html.dark .form-input:focus, html.dark .form-select:focus {
+            border-color: #60a5fa; /* blue-400 */
             box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
         }
         html.dark .form-label {
-            color: #d1d5db;
+            color: #d1d5db; /* cool-gray-300 */
         }
-        html.dark .convert-button {
-            background-color: #3b82f6;
+        html.dark .action-button {
+            background-color: #3b82f6; /* blue-500 */
             color: white;
+            border-color: #2563eb; /* blue-600 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        html.dark .convert-button:hover {
-            background-color: #2563eb;
+        html.dark .action-button:hover {
+            background-color: #2563eb; /* blue-600 */
+            border-color: #1d4ed8; /* blue-700 */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.25);
         }
         html.dark .result-box {
-            background-color: #3730a3;
-            border-color: #4f46e5;
-            color: #e0e7ff;
+            background-color: #3730a3; /* indigo-800 */
+            border-color: #4f46e5; /* indigo-600 */
+            color: #e0e7ff; /* indigo-100 */
         }
         html.dark .info-text {
-            color: #9ca3af;
+            color: #9ca3af; /* cool-gray-400 */
         }
         html.dark .header-title {
-            color: #60a5fa;
+            color: #60a5fa; /* blue-400 */
         }
         html.dark .header-subtitle {
-            color: #9ca3af;
+            color: #9ca3af; /* cool-gray-400 */
         }
         html.dark .footer-text {
-            color: #9ca3af;
+            color: #9ca3af; /* cool-gray-400 */
         }
         html.dark .control-button {
-            background-color: #4b5567;
-            color: #e5e7eb;
+            background-color: #4b5563; /* cool-gray-600 */
+            color: #e5e7eb; /* cool-gray-200 */
         }
         html.dark .control-button:hover {
-            background-color: #52525b;
+            background-color: #52525b; /* true-gray-500 */
         }
 
-
-        .converter-section {
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            padding: 2rem;
-            animation: fadeIn 0.5s ease-out;
-            border: 1px solid;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
+        .tool-section {
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            padding: 2rem; /* p-8 */
+            border-width: 1px;
+            transition: background-color 0.3s ease, border-color 0.3s ease, opacity 0.5s ease-out, transform 0.5s ease-out;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes fadeInSection {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .form-input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid;
-            border-radius: 0.5rem;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+        @keyframes fadeInResult {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
-        /* Ensure LTR for number inputs always */
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem; /* py-3 px-4 */
+            border-width: 1px;
+            border-radius: 0.5rem; /* rounded-lg */
+        }
         input[type="number"] {
             text-align: left;
             direction: ltr;
         }
         .tab-button {
-            padding: 0.75rem 1.5rem;
+            padding: 0.5rem 0.75rem; 
+            font-size: 0.8rem; 
+            white-space: nowrap; 
             cursor: pointer;
             border: none;
             background-color: transparent;
             font-weight: 600;
-            transition: all 0.3s ease;
-            border-bottom: 3px solid;
+            border-bottom-width: 3px;
         }
         .result-box {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            border: 1px solid;
+            margin-top: 1.5rem; /* mt-6 */
+            padding: 1rem; /* p-4 */
+            border-radius: 0.5rem; /* rounded-lg */
+            border-width: 1px;
             font-weight: 600;
             text-align: center;
             min-height: 50px;
-            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, opacity 0.4s ease-out, transform 0.4s ease-out;
         }
+        .info-table { /* Styles for the new table layout */
+            width: 100%;
+            margin-top: 1rem;
+            border-collapse: collapse;
+        }
+        .info-table th, .info-table td {
+            border: 1px solid; /* Will be themed by dark/light mode border-color */
+            padding: 0.75rem; /* p-3 */
+            text-align: right; /* Default for Arabic */
+            font-size: 0.875rem; /* text-sm */
+        }
+        html[lang="en"] .info-table th, html[lang="en"] .info-table td {
+            text-align: left;
+        }
+        .info-table th {
+            font-weight: 600; /* semibold */
+            background-color: rgba(0,0,0,0.03); /* Light subtle background for header cells */
+        }
+        html.dark .info-table th {
+            background-color: rgba(255,255,255,0.05); /* Light subtle background for header cells in dark mode */
+        }
+        html.dark .info-table th, html.dark .info-table td {
+             border-color: #4b5563; /* cool-gray-600 for dark mode table borders */
+        }
+        html:not(.dark) .info-table th, html:not(.dark) .info-table td {
+             border-color: #e5e7eb; /* cool-gray-200 for light mode table borders */
+        }
+
     </style>
 </head>
 <body>
-    <div class="container mx-auto p-4 md:p-8 max-w-2xl min-h-screen flex flex-col justify-center">
-        <div class="absolute top-4 right-4 flex space-x-2 rtl:space-x-reverse">
-            <button id="language-toggle" type="button" class="control-button text-sm p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 font-medium w-10 h-10 flex items-center justify-center">
-                EN
-            </button>
-            <button id="theme-toggle" type="button" class="control-button text-sm p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600">
-                <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-            </button>
-        </div>
-
-        <header class="text-center mb-8 md:mb-12">
-            <h1 id="mainHeader" class="text-3xl md:text-4xl font-bold header-title">محول وحدات الثلاجات الذكي</h1>
-            <p id="subHeader" class="header-subtitle mt-2 text-lg">حوّل بسهولة بين وحدات السعة والقدرة لثلاجتك</p>
+    <div class="container mx-auto px-4 md:px-8 max-w-3xl min-h-screen flex flex-col">
+        
+        <header class="header-container md:mb-12 pt-4 md:pt-0"> <div class="header-text-content">
+                <h1 id="mainHeader" class="text-3xl md:text-4xl font-bold header-title">أدوات أنظمة التبريد والتكييف</h1>
+                <p id="subHeader" class="header-subtitle mt-2 text-lg">أدوات وحاسبات مفيدة لمهندسي وفنيي التبريد والتكييف</p>
+            </div>
+            <div class="header-controls">
+                <button id="language-toggle" type="button" class="control-button text-sm p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 font-medium w-10 h-10 flex items-center justify-center">
+                    EN
+                </button>
+                <button id="theme-toggle" type="button" class="control-button text-sm p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600">
+                    <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                    <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                </button>
+            </div>
         </header>
 
-        <div class="mb-6 flex justify-center border-b border-gray-300 dark:border-gray-700">
-            <button id="tabLiters" class="tab-button active-tab" onclick="showConverter('liters')">لتر ← قدم مكعب</button>
-            <button id="tabAmps" class="tab-button" onclick="showConverter('amps')">أمبير ← حصان</button>
+        <div class="mb-6 flex flex-wrap justify-center border-b border-gray-300 dark:border-gray-700">
+            <button id="tabLiters" class="tab-button active-tab" onclick="showTool('liters')">لتر ← قدم مكعب</button>
+            <button id="tabAmps" class="tab-button" onclick="showTool('amps')">أمبير ← حصان</button>
+            <button id="tabRefrigerantInfo" class="tab-button" onclick="showTool('refrigerantInfo')">معلومات الفريون</button>
+            <button id="tabCapillaryCalc" class="tab-button" onclick="showTool('capillaryCalc')">حساب الكابيلاري</button>
+            <button id="tabCompressorInfo" class="tab-button" onclick="showTool('compressorInfo')">معلومات الضواغط</button>
         </div>
 
-        <div id="convertersContainer">
-            <div id="litersConverter" class="converter-section">
+        <main id="toolsContainer" class="flex-grow">
+            <div id="litersConverter" class="tool-section">
                 <h2 id="litersConverterTitle" class="text-2xl font-semibold mb-6 text-center">تحويل سعة الثلاجة (لتر إلى قدم مكعب)</h2>
                 <div>
                     <label for="litersInput" id="litersInputLabel" class="form-label">أدخل السعة باللتر:</label>
-                    <input type="number" id="litersInput" class="form-input" placeholder="مثال: 300">
+                    <input type="number" id="litersInput" class="form-input mt-1" placeholder="مثال: 300">
                 </div>
-                <button id="convertLitersButton" onclick="convertLitersToCubicFeet()" class="convert-button mt-6">تحويل إلى قدم مكعب</button>
+                <button id="convertLitersButton" onclick="convertLitersToCubicFeet()" class="action-button w-full mt-6 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-cool-gray-800">تحويل إلى قدم مكعب</button>
                 <div id="litersResult" class="result-box"></div>
             </div>
 
-            <div id="ampsConverter" class="converter-section hidden">
+            <div id="ampsConverter" class="tool-section hidden">
                 <h2 id="ampsConverterTitle" class="text-2xl font-semibold mb-6 text-center">تقدير قدرة الموتور (أمبير إلى حصان)</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                     <div>
                         <label for="ampsInput" id="ampsInputLabel" class="form-label">شدة التيار (أمبير):</label>
-                        <input type="number" id="ampsInput" class="form-input" placeholder="مثال: 1.5">
+                        <input type="number" id="ampsInput" class="form-input mt-1" placeholder="مثال: 1.5">
                     </div>
                     <div>
                         <label for="voltsInput" id="voltsInputLabel" class="form-label">الجهد (فولت):</label>
-                        <input type="number" id="voltsInput" class="form-input" value="220">
+                        <input type="number" id="voltsInput" class="form-input mt-1" value="220">
                     </div>
                 </div>
                 <div class="mt-4">
-                    <label for="powerFactorInput" id="powerFactorInputLabel" class="form-label">معامل القدرة (Power Factor):</label>
-                    <input type="number" id="powerFactorInput" class="form-input" value="0.8" step="0.01" min="0" max="1">
-                    <p id="powerFactorInfo" class="info-text">القيمة النموذجية للمحركات تتراوح بين 0.7 و 0.9. هذه القيمة تقديرية.</p>
+                    <label for="powerFactorInput" id="powerFactorInputLabel" class="form-label">معامل القدرة (PF):</label>
+                    <input type="number" id="powerFactorInput" class="form-input mt-1" value="0.8" step="0.01" min="0" max="1">
+                    <p id="powerFactorInfo" class="info-text mt-1">القيمة النموذجية للمحركات تتراوح بين 0.7 و 0.9. هذه القيمة تقديرية.</p>
                 </div>
-                <button id="convertAmpsButton" onclick="convertAmpsToHorsepower()" class="convert-button mt-6">تقدير القدرة بالحصان</button>
+                <button id="convertAmpsButton" onclick="convertAmpsToHorsepower()" class="action-button w-full mt-6 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-cool-gray-800">تقدير القدرة بالحصان</button>
                 <div id="ampsResult" class="result-box"></div>
                 <p id="ampsNote" class="info-text mt-4 text-center">ملاحظة: هذه القيمة هي تقدير تقريبي لقدرة الموتور بالحصان وقد تختلف بناءً على كفاءة الموتور وعوامل أخرى.</p>
             </div>
-        </div>
 
-        <footer class="text-center mt-12 text-sm footer-text">
-            <p>&copy; <span id="currentYear"></span> - <span id="footerText">محول وحدات الثلاجات. تصميم وتطوير مروان  المغازي.</span></p>
+            <div id="refrigerantInfoSection" class="tool-section hidden">
+                <h2 id="refrigerantInfoHeader" class="text-2xl font-semibold mb-6 text-center">معلومات مركبات التبريد</h2>
+                <div>
+                    <label for="refrigerantSelectInfo" id="refrigerantSelectInfoLabel" class="form-label">اختر مركب التبريد:</label>
+                    <select id="refrigerantSelectInfo" class="form-select mt-1"></select>
+                </div>
+                <div id="refrigerantInfoResult" class="result-box overflow-x-auto"> <p id="refrigerantInfoPlaceholder" class="info-text">اختر مركب تبريد لعرض معلوماته.</p>
+                </div>
+            </div>
+
+            <div id="capillaryCalcSection" class="tool-section hidden">
+                <h2 id="capillaryCalcHeader" class="text-2xl font-semibold mb-6 text-center">حساب قطر الماسورة الشعرية (تقديري)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <div>
+                        <label for="compressorCapacity" id="compressorCapacityLabel" class="form-label">قدرة الضاغط (حصان):</label>
+                        <input type="number" id="compressorCapacity" class="form-input mt-1" placeholder="مثال: 0.25">
+                    </div>
+                    <div>
+                        <label for="refrigerantSelectCalc" id="refrigerantSelectCalcLabel" class="form-label">نوع مركب التبريد:</label>
+                        <select id="refrigerantSelectCalc" class="form-select mt-1"></select>
+                    </div>
+                </div>
+                <button id="calculateCapillaryButton" onclick="calculateCapillaryTube()" class="action-button w-full mt-6 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-cool-gray-800">حساب القطر</button>
+                <div id="capillaryResult" class="result-box"></div>
+                <p id="capillaryNote" class="info-text mt-4 text-center">ملاحظة هامة: هذا الحساب هو تقدير أولي ومبسط للغاية. تصميم الماسورة الشعرية يعتمد على عوامل متعددة. استشر دائماً جداول المصنعين أو برامج التصميم المتخصصة.</p>
+            </div>
+            
+            <div id="compressorInfoSection" class="tool-section hidden">
+                <h2 id="compressorInfoHeader" class="text-2xl font-semibold mb-6 text-center">معلومات أنواع الضواغط</h2>
+                <div>
+                    <label for="compressorTypeSelect" id="compressorTypeSelectLabel" class="form-label">اختر نوع الضاغط:</label>
+                    <select id="compressorTypeSelect" class="form-select mt-1"></select>
+                </div>
+                <div id="compressorInfoResult" class="result-box overflow-x-auto"> <p id="compressorInfoPlaceholder" class="info-text">اختر نوع ضاغط لعرض معلوماته.</p>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="text-center mt-auto py-8 pb-16 md:pb-8 text-sm footer-text"> <p>&copy; <span id="currentYear"></span> - <span id="footerText">أدوات التبريد والتكييف. تصميم وتطوير مروان المغازي.</span></p>
         </footer>
     </div>
 
     <script>
         // --- DOM Elements ---
         const yearSpan = document.getElementById('currentYear');
-        const litersConverterDiv = document.getElementById('litersConverter');
-        const ampsConverterDiv = document.getElementById('ampsConverter');
-        const tabLitersButton = document.getElementById('tabLiters');
-        const tabAmpsButton = document.getElementById('tabAmps');
+        const toolsContainer = document.getElementById('toolsContainer');
         const themeToggleButton = document.getElementById('theme-toggle');
         const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
         const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
         const languageToggleButton = document.getElementById('language-toggle');
         const htmlElement = document.documentElement;
+        const footerTextElement = document.getElementById('footerText'); 
+
+        // --- Data ---
+        const refrigerants = [
+            { id: "R22", name: "R-22", boilingPointC: -40.8, boilingPointF: -41.4, type: "HCFC", pressureGroup: "Medium" },
+            { id: "R134a", name: "R-134a", boilingPointC: -26.1, boilingPointF: -15.0, type: "HFC", pressureGroup: "Medium" },
+            { id: "R404A", name: "R-404A", boilingPointC: -46.5, boilingPointF: -51.7, type: "HFC Blend", pressureGroup: "High" },
+            { id: "R407C", name: "R-407C", boilingPointC: -43.8, boilingPointF: -46.8, type: "HFC Blend", pressureGroup: "High" },
+            { id: "R410A", name: "R-410A", boilingPointC: -51.4, boilingPointF: -60.5, type: "HFC Blend", pressureGroup: "Very High" },
+            { id: "R600a", name: "R-600a (Isobutane)", boilingPointC: -11.7, boilingPointF: 10.9, type: "HC", pressureGroup: "Low" },
+            { id: "R290", name: "R-290 (Propane)", boilingPointC: -42.1, boilingPointF: -43.8, type: "HC", pressureGroup: "Medium" },
+            { id: "R717", name: "R-717 (Ammonia)", boilingPointC: -33.3, boilingPointF: -28.0, type: "Natural", pressureGroup: "Medium" },
+            { id: "R32", name: "R-32", boilingPointC: -51.7, boilingPointF: -61.1, type: "HFC", pressureGroup: "Very High" },
+            { id: "R1234yf", name: "R-1234yf", boilingPointC: -29.0, boilingPointF: -20.2, type: "HFO", pressureGroup: "Medium" }
+        ];
+
+        const compressors = [
+            { id: "reciprocating", name_ar: "ضاغط ترددي", name_en: "Reciprocating", capacity_ar: "كسور صغيرة إلى 100+ حصان", capacity_en: "Fractional to 100+ HP", applications_ar: "ثلاجات منزلية، مكيفات شباك، وحدات تجارية صغيرة إلى متوسطة", applications_en: "Domestic fridges, window ACs, small-medium commercial units" },
+            { id: "rotary", name_ar: "ضاغط دوراني", name_en: "Rotary", capacity_ar: "0.5 إلى 5 حصان", capacity_en: "0.5 to 5 HP", applications_ar: "مكيفات سبليت، ثلاجات، مجففات", applications_en: "Split ACs, refrigerators, dehumidifiers" },
+            { id: "scroll", name_ar: "ضاغط حلزوني (سكرول)", name_en: "Scroll", capacity_ar: "1 إلى 60 حصان", capacity_en: "1 to 60 HP", applications_ar: "مكيفات سكنية وتجارية، مضخات حرارية", applications_en: "Residential & commercial ACs, heat pumps" },
+            { id: "screw", name_ar: "ضاغط لولبي (سكرو)", name_en: "Screw", capacity_ar: "10 إلى 500+ حصان", capacity_en: "10 to 500+ HP", applications_ar: "تبريد صناعي، تجميد أغذية، مكيفات مركزية كبيرة", applications_en: "Industrial refrigeration, food freezing, large central ACs" }
+        ];
 
         // --- Translations ---
         const translations = {
             ar: {
-                pageTitle: "محول وحدات الثلاجات",
-                mainHeader: "محول وحدات الثلاجات الذكي",
-                subHeader: "حوّل بسهولة بين وحدات السعة والقدرة لثلاجتك",
+                pageTitle: "أدوات أنظمة التبريد والتكييف",
+                mainHeader: "أدوات أنظمة التبريد والتكييف",
+                subHeader: "أدوات وحاسبات مفيدة لمهندسي وفنيي التبريد والتكييف", // Corrected
                 tabLiters: "لتر ← قدم مكعب",
                 tabAmps: "أمبير ← حصان",
+                tabRefrigerantInfo: "معلومات الفريون",
+                tabCapillaryCalc: "حساب الكابيلاري",
+                tabCompressorInfo: "معلومات الضواغط",
                 litersConverterTitle: "تحويل سعة الثلاجة (لتر إلى قدم مكعب)",
                 litersInputLabel: "أدخل السعة باللتر:",
                 litersInputPlaceholder: "مثال: 300",
@@ -277,25 +424,52 @@
                 ampsInputLabel: "شدة التيار (أمبير):",
                 ampsInputPlaceholder: "مثال: 1.5",
                 voltsInputLabel: "الجهد (فولت):",
-                powerFactorInputLabel: "معامل القدرة (Power Factor):",
+                powerFactorInputLabel: "معامل القدرة (PF):",
                 powerFactorInfo: "القيمة النموذجية للمحركات تتراوح بين 0.7 و 0.9. هذه القيمة تقديرية.",
                 convertAmpsButton: "تقدير القدرة بالحصان",
                 ampsNote: "ملاحظة: هذه القيمة هي تقدير تقريبي لقدرة الموتور بالحصان وقد تختلف بناءً على كفاءة الموتور وعوامل أخرى.",
-                footerText: "محول وحدات الثلاجات. تصميم وتطوير مروان المغازي.",
+                footerText: "أدوات التبريد والتكييف. تصميم وتطوير مروان المغازي.",
                 errorInvalidLiters: "الرجاء إدخال قيمة صالحة للسعة باللتر.",
                 errorInvalidAmps: "الرجاء إدخال قيمة صالحة لشدة التيار.",
                 errorInvalidVolts: "الرجاء إدخال قيمة صالحة للجهد.",
                 errorInvalidPowerFactor: "الرجاء إدخال قيمة صالحة لمعامل القدرة (بين 0 و 1).",
                 litersResultText: (liters, cubicFeet) => `${liters} لتر ≈ <strong>${cubicFeet.toFixed(3)}</strong> قدم مكعب`,
                 ampsResultText: (horsepower) => `القدرة التقديرية ≈ <strong>${horsepower.toFixed(3)}</strong> حصان`,
+                refrigerantInfoHeader: "معلومات مركبات التبريد",
+                refrigerantSelectInfoLabel: "اختر مركب التبريد:",
+                refrigerantInfoPlaceholder: "اختر مركب تبريد لعرض معلوماته.",
+                refrigerantNameLabel: "الاسم:",
+                refrigerantTypeLabel: "النوع:",
+                boilingPointCLabel: "درجة التبخر (مئوية):",
+                boilingPointFLabel: "درجة التبخر (فهرنهايت):",
+                pressureGroupLabel: "مجموعة الضغط:",
+                capillaryCalcHeader: "حساب قطر الماسورة الشعرية (تقديري)",
+                compressorCapacityLabel: "قدرة الضاغط (حصان):",
+                compressorCapacityPlaceholder: "مثال: 0.25",
+                refrigerantSelectCalcLabel: "نوع مركب التبريد:",
+                calculateCapillaryButton: "حساب القطر",
+                capillaryNote: "ملاحظة هامة: هذا الحساب هو تقدير أولي ومبسط للغاية. تصميم الماسورة الشعرية يعتمد على عوامل متعددة. استشر دائماً جداول المصنعين أو برامج التصميم المتخصصة.",
+                errorInvalidCapacity: "الرجاء إدخال قيمة صالحة لقدرة الضاغط.",
+                capillaryResultText: (diameterMM, diameterIN) => `القطر الداخلي التقديري: <strong>${diameterMM.toFixed(3)} مم</strong> (≈ <strong>${diameterIN.toFixed(4)} بوصة</strong>)`,
+                selectRefrigerantPrompt: "اختر فريون...",
+                compressorInfoHeader: "معلومات أنواع الضواغط",
+                compressorTypeSelectLabel: "اختر نوع الضاغط:",
+                compressorInfoPlaceholder: "اختر نوع ضاغط لعرض معلوماته.",
+                compressorNameLabel: "النوع:",
+                compressorCapacityRangeLabel: "نطاق السعة (حصان):",
+                compressorApplicationsLabel: "الاستخدامات الشائعة:",
+                selectCompressorPrompt: "اختر ضاغط...",
                 langToggle: "EN"
             },
             en: {
-                pageTitle: "Refrigerator Unit Converter",
-                mainHeader: "Smart Refrigerator Unit Converter",
-                subHeader: "Easily convert capacity and power units for your refrigerator",
+                pageTitle: "HVAC Tools",
+                mainHeader: "HVAC Tools",
+                subHeader: "Useful tools and calculators for refrigeration and air conditioning engineers and technicians", // Corrected
                 tabLiters: "Liters → Cubic Ft",
                 tabAmps: "Amps → Horsepower",
+                tabRefrigerantInfo: "Refrigerant Info",
+                tabCapillaryCalc: "Capillary Calc",
+                tabCompressorInfo: "Compressor Info",
                 litersConverterTitle: "Convert Refrigerator Capacity (Liters to Cubic Feet)",
                 litersInputLabel: "Enter capacity in Liters:",
                 litersInputPlaceholder: "Example: 300",
@@ -304,23 +478,79 @@
                 ampsInputLabel: "Current (Amps):",
                 ampsInputPlaceholder: "Example: 1.5",
                 voltsInputLabel: "Voltage (Volts):",
-                powerFactorInputLabel: "Power Factor:",
+                powerFactorInputLabel: "Power Factor (PF):",
                 powerFactorInfo: "Typical value for motors is between 0.7 and 0.9. This is an estimate.",
                 convertAmpsButton: "Estimate Horsepower",
                 ampsNote: "Note: This is an approximate estimation of motor horsepower and may vary based on motor efficiency and other factors.",
-                footerText: "Refrigerator Unit Converter. Designed & Developed by Marwan Elmoghazy.",
+                footerText: "HVAC Tools. Designed & Developed by Marwan Elmoghazy.",
                 errorInvalidLiters: "Please enter a valid capacity in liters.",
                 errorInvalidAmps: "Please enter a valid current in amps.",
                 errorInvalidVolts: "Please enter a valid voltage.",
                 errorInvalidPowerFactor: "Please enter a valid power factor (between 0 and 1).",
                 litersResultText: (liters, cubicFeet) => `${liters} Liters ≈ <strong>${cubicFeet.toFixed(3)}</strong> Cubic Feet`,
                 ampsResultText: (horsepower) => `Estimated Power ≈ <strong>${horsepower.toFixed(3)}</strong> HP`,
-                langToggle: "ع" // Short for العربية
+                refrigerantInfoHeader: "Refrigerant Information",
+                refrigerantSelectInfoLabel: "Select Refrigerant:",
+                refrigerantInfoPlaceholder: "Select a refrigerant to display its information.",
+                refrigerantNameLabel: "Name:",
+                refrigerantTypeLabel: "Type:",
+                boilingPointCLabel: "Boiling Point (°C):",
+                boilingPointFLabel: "Boiling Point (°F):",
+                pressureGroupLabel: "Pressure Group:",
+                capillaryCalcHeader: "Capillary Tube Diameter Calculator (Estimate)",
+                compressorCapacityLabel: "Compressor Capacity (HP):",
+                compressorCapacityPlaceholder: "Example: 0.25",
+                refrigerantSelectCalcLabel: "Refrigerant Type:",
+                calculateCapillaryButton: "Calculate Diameter",
+                capillaryNote: "Important Note: This calculation is a very basic estimation. Capillary tube design depends on multiple factors. Always consult manufacturer's data or specialized software.",
+                errorInvalidCapacity: "Please enter a valid compressor capacity.",
+                capillaryResultText: (diameterMM, diameterIN) => `Estimated Inner Diameter: <strong>${diameterMM.toFixed(3)} mm</strong> (≈ <strong>${diameterIN.toFixed(4)} inches</strong>)`,
+                selectRefrigerantPrompt: "Select refrigerant...",
+                compressorInfoHeader: "Compressor Type Information",
+                compressorTypeSelectLabel: "Select Compressor Type:",
+                compressorInfoPlaceholder: "Select a compressor type to display its information.",
+                compressorNameLabel: "Type:",
+                compressorCapacityRangeLabel: "Capacity Range (HP):",
+                compressorApplicationsLabel: "Common Applications:",
+                selectCompressorPrompt: "Select compressor...",
+                langToggle: "ع"
             }
         };
 
         let currentLang = localStorage.getItem('language') || 'ar';
 
+        // --- Populate Selects ---
+        function populateSelects() {
+            const refrigerantSelects = [document.getElementById('refrigerantSelectInfo'), document.getElementById('refrigerantSelectCalc')];
+            const refrigerantPrompt = translations[currentLang].selectRefrigerantPrompt;
+            refrigerantSelects.forEach(select => {
+                if (!select) return;
+                const currentValue = select.value;
+                select.innerHTML = `<option value="">${refrigerantPrompt}</option>`;
+                refrigerants.forEach(r => {
+                    const option = document.createElement('option');
+                    option.value = r.id;
+                    option.textContent = r.name;
+                    select.appendChild(option);
+                });
+                select.value = currentValue;
+            });
+
+            const compressorSelect = document.getElementById('compressorTypeSelect');
+            const compressorPrompt = translations[currentLang].selectCompressorPrompt;
+            if (compressorSelect) {
+                const currentValue = compressorSelect.value;
+                compressorSelect.innerHTML = `<option value="">${compressorPrompt}</option>`;
+                compressors.forEach(c => {
+                    const option = document.createElement('option');
+                    option.value = c.id;
+                    option.textContent = currentLang === 'ar' ? c.name_ar : c.name_en;
+                    compressorSelect.appendChild(option);
+                });
+                compressorSelect.value = currentValue; 
+            }
+        }
+        
         // --- Functions ---
         function applyTranslations() {
             const lang = translations[currentLang];
@@ -329,43 +559,115 @@
             htmlElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
 
             document.getElementById('mainHeader').textContent = lang.mainHeader;
-            document.getElementById('subHeader').textContent = lang.subHeader;
-            tabLitersButton.textContent = lang.tabLiters;
-            tabAmpsButton.textContent = lang.tabAmps;
-            document.getElementById('litersConverterTitle').textContent = lang.litersConverterTitle;
-            document.getElementById('litersInputLabel').textContent = lang.litersInputLabel;
-            document.getElementById('litersInput').placeholder = lang.litersInputPlaceholder;
-            document.getElementById('convertLitersButton').textContent = lang.convertLitersButton;
-            document.getElementById('ampsConverterTitle').textContent = lang.ampsConverterTitle;
-            document.getElementById('ampsInputLabel').textContent = lang.ampsInputLabel;
-            document.getElementById('ampsInput').placeholder = lang.ampsInputPlaceholder;
-            document.getElementById('voltsInputLabel').textContent = lang.voltsInputLabel;
-            document.getElementById('powerFactorInputLabel').textContent = lang.powerFactorInputLabel;
-            document.getElementById('powerFactorInfo').textContent = lang.powerFactorInfo;
-            document.getElementById('convertAmpsButton').textContent = lang.convertAmpsButton;
-            document.getElementById('ampsNote').textContent = lang.ampsNote;
-            document.getElementById('footerText').textContent = lang.footerText;
+            document.getElementById('subHeader').textContent = lang.subHeader; // Corrected subHeader update
+            footerTextElement.textContent = lang.footerText;
             languageToggleButton.textContent = lang.langToggle;
 
-            // Re-run conversions to update result text language if results are visible
-            if (document.getElementById('litersResult').innerHTML) convertLitersToCubicFeet(true);
-            if (document.getElementById('ampsResult').innerHTML) convertAmpsToHorsepower(true);
-        }
+            const elementsToTranslate = {
+                'tabLiters': lang.tabLiters,
+                'tabAmps': lang.tabAmps,
+                'tabRefrigerantInfo': lang.tabRefrigerantInfo,
+                'tabCapillaryCalc': lang.tabCapillaryCalc,
+                'tabCompressorInfo': lang.tabCompressorInfo,
+                'litersConverterTitle': lang.litersConverterTitle,
+                'litersInputLabel': lang.litersInputLabel,
+                'convertLitersButton': lang.convertLitersButton,
+                'ampsConverterTitle': lang.ampsConverterTitle,
+                'ampsInputLabel': lang.ampsInputLabel,
+                'voltsInputLabel': lang.voltsInputLabel,
+                'powerFactorInputLabel': lang.powerFactorInputLabel,
+                'powerFactorInfo': lang.powerFactorInfo,
+                'convertAmpsButton': lang.convertAmpsButton,
+                'ampsNote': lang.ampsNote,
+                'refrigerantInfoHeader': lang.refrigerantInfoHeader,
+                'refrigerantSelectInfoLabel': lang.refrigerantSelectInfoLabel,
+                'capillaryCalcHeader': lang.capillaryCalcHeader,
+                'compressorCapacityLabel': lang.compressorCapacityLabel,
+                'refrigerantSelectCalcLabel': lang.refrigerantSelectCalcLabel,
+                'calculateCapillaryButton': lang.calculateCapillaryButton,
+                'capillaryNote': lang.capillaryNote,
+                'compressorInfoHeader': lang.compressorInfoHeader,
+                'compressorTypeSelectLabel': lang.compressorTypeSelectLabel
+            };
 
-
-        function showConverter(type) {
-            if (type === 'liters') {
-                litersConverterDiv.classList.remove('hidden');
-                ampsConverterDiv.classList.add('hidden');
-                tabLitersButton.classList.add('active-tab');
-                tabAmpsButton.classList.remove('active-tab');
-            } else if (type === 'amps') {
-                ampsConverterDiv.classList.remove('hidden');
-                litersConverterDiv.classList.add('hidden');
-                tabAmpsButton.classList.add('active-tab');
-                tabLitersButton.classList.remove('active-tab');
+            for (const id in elementsToTranslate) {
+                const element = document.getElementById(id);
+                if (element) {
+                    if (element.tagName === 'INPUT' && (element.type === 'text' || element.type === 'number')) { 
+                        element.placeholder = elementsToTranslate[id];
+                    } else {
+                        element.textContent = elementsToTranslate[id];
+                    }
+                }
             }
+            document.getElementById('litersInput').placeholder = lang.litersInputPlaceholder;
+            document.getElementById('ampsInput').placeholder = lang.ampsInputPlaceholder;
+            document.getElementById('compressorCapacity').placeholder = lang.compressorCapacityPlaceholder;
+            
+            const refrigerantInfoPlaceholder = document.getElementById('refrigerantInfoPlaceholder');
+            if(refrigerantInfoPlaceholder) refrigerantInfoPlaceholder.textContent = lang.refrigerantInfoPlaceholder;
+            const compressorInfoPlaceholder = document.getElementById('compressorInfoPlaceholder');
+            if(compressorInfoPlaceholder) compressorInfoPlaceholder.textContent = lang.compressorInfoPlaceholder;
+
+            populateSelects(); 
+
+            if (document.getElementById('litersResult').innerHTML && !document.getElementById('litersResult').querySelector('p[style*="color"]')) convertLitersToCubicFeet(true);
+            if (document.getElementById('ampsResult').innerHTML && !document.getElementById('ampsResult').querySelector('p[style*="color"]')) convertAmpsToHorsepower(true);
+            if (document.getElementById('refrigerantSelectInfo').value) displayRefrigerantInfo(true);
+            if (document.getElementById('capillaryResult').innerHTML && !document.getElementById('capillaryResult').querySelector('p[style*="color"]')) calculateCapillaryTube(true);
+            if (document.getElementById('compressorTypeSelect').value) displayCompressorInfo(true);
         }
+
+        function showTool(type) {
+            Array.from(toolsContainer.children).forEach(toolDiv => {
+                toolDiv.classList.add('hidden');
+                toolDiv.classList.remove('visible'); 
+            });
+            const tabs = [
+                document.getElementById('tabLiters'), 
+                document.getElementById('tabAmps'),
+                document.getElementById('tabRefrigerantInfo'),
+                document.getElementById('tabCapillaryCalc'),
+                document.getElementById('tabCompressorInfo')
+            ];
+            tabs.forEach(tab => tab.classList.remove('active-tab'));
+
+            let toolToShow, tabToActivate;
+            switch(type) {
+                case 'liters': 
+                    toolToShow = document.getElementById('litersConverter'); 
+                    tabToActivate = document.getElementById('tabLiters'); 
+                    break;
+                case 'amps': 
+                    toolToShow = document.getElementById('ampsConverter'); 
+                    tabToActivate = document.getElementById('tabAmps'); 
+                    break;
+                case 'refrigerantInfo': 
+                    toolToShow = document.getElementById('refrigerantInfoSection'); 
+                    tabToActivate = document.getElementById('tabRefrigerantInfo'); 
+                    break;
+                case 'capillaryCalc': 
+                    toolToShow = document.getElementById('capillaryCalcSection'); 
+                    tabToActivate = document.getElementById('tabCapillaryCalc'); 
+                    break;
+                case 'compressorInfo':
+                    toolToShow = document.getElementById('compressorInfoSection');
+                    tabToActivate = document.getElementById('tabCompressorInfo');
+                    break;
+            }
+            if (toolToShow) {
+                toolToShow.classList.remove('hidden');
+                setTimeout(() => toolToShow.classList.add('visible'), 10); 
+            }
+            if (tabToActivate) tabToActivate.classList.add('active-tab');
+        }
+        
+        function triggerResultAnimation(resultDiv) {
+            resultDiv.classList.remove('visible');
+            void resultDiv.offsetWidth; 
+            resultDiv.classList.add('visible');
+        }
+
 
         function convertLitersToCubicFeet(isLanguageChange = false) {
             const litersInput = document.getElementById('litersInput');
@@ -375,23 +677,24 @@
             const errorColor = '#ef4444';
 
             if (!isLanguageChange && (isNaN(liters) || liters < 0)) {
-                litersResultDiv.textContent = translations[currentLang].errorInvalidLiters;
-                litersResultDiv.style.color = errorColor;
+                litersResultDiv.innerHTML = `<p style="color:${errorColor}">${translations[currentLang].errorInvalidLiters}</p>`;
+                triggerResultAnimation(litersResultDiv);
                 return;
             }
-             if (isLanguageChange && (isNaN(liters) || liters < 0) && litersResultDiv.textContent.includes(translations[currentLang === 'ar' ? 'en' : 'ar'].errorInvalidLiters.substring(0,10))) {
-                litersResultDiv.textContent = translations[currentLang].errorInvalidLiters;
-                litersResultDiv.style.color = errorColor;
+            if (isLanguageChange && (isNaN(liters) || liters < 0) && litersResultDiv.innerHTML.includes(translations[currentLang === 'ar' ? 'en' : 'ar'].errorInvalidLiters.substring(0,10))) {
+                litersResultDiv.innerHTML = `<p style="color:${errorColor}">${translations[currentLang].errorInvalidLiters}</p>`;
+                triggerResultAnimation(litersResultDiv);
                 return;
             }
-
 
             if (!isNaN(liters) && liters >=0) {
                  const cubicFeet = liters * 0.0353147;
                  litersResultDiv.innerHTML = translations[currentLang].litersResultText(liters, cubicFeet);
-                 litersResultDiv.style.color = resultBoxBaseColor;
-            } else if (!isLanguageChange) { // Clear if input is invalid and not just a lang change
+                 litersResultDiv.style.color = resultBoxBaseColor; 
+                 triggerResultAnimation(litersResultDiv);
+            } else if (!isLanguageChange) { 
                 litersResultDiv.innerHTML = "";
+                litersResultDiv.classList.remove('visible');
             }
         }
 
@@ -407,46 +710,159 @@
             const volts = parseFloat(voltsInput.value);
             const powerFactor = parseFloat(powerFactorInput.value);
             let error = false;
+            let errorMsgKey = "";
 
             if (!isLanguageChange) {
-                if (isNaN(amps) || amps <= 0) {
-                    ampsResultDiv.textContent = translations[currentLang].errorInvalidAmps;
-                    error = true;
-                } else if (isNaN(volts) || volts <= 0) {
-                    ampsResultDiv.textContent = translations[currentLang].errorInvalidVolts;
-                    error = true;
-                } else if (isNaN(powerFactor) || powerFactor <= 0 || powerFactor > 1) {
-                    ampsResultDiv.textContent = translations[currentLang].errorInvalidPowerFactor;
-                    error = true;
-                }
+                if (isNaN(amps) || amps <= 0) { errorMsgKey = "errorInvalidAmps"; error = true; }
+                else if (isNaN(volts) || volts <= 0) { errorMsgKey = "errorInvalidVolts"; error = true; }
+                else if (isNaN(powerFactor) || powerFactor < 0 || powerFactor > 1) { errorMsgKey = "errorInvalidPowerFactor"; error = true; }
+                
                 if(error) {
-                    ampsResultDiv.style.color = errorColor;
+                    ampsResultDiv.innerHTML = `<p style="color:${errorColor}">${translations[currentLang][errorMsgKey]}</p>`;
+                    triggerResultAnimation(ampsResultDiv);
                     return;
                 }
-            } else { // Handle language change for existing error messages
-                 if (ampsResultDiv.textContent.includes(translations[currentLang === 'ar' ? 'en' : 'ar'].errorInvalidAmps.substring(0,10))) {
-                    ampsResultDiv.textContent = translations[currentLang].errorInvalidAmps; error = true;
-                } else if (ampsResultDiv.textContent.includes(translations[currentLang === 'ar' ? 'en' : 'ar'].errorInvalidVolts.substring(0,10))) {
-                    ampsResultDiv.textContent = translations[currentLang].errorInvalidVolts; error = true;
-                } else if (ampsResultDiv.textContent.includes(translations[currentLang === 'ar' ? 'en' : 'ar'].errorInvalidPowerFactor.substring(0,10))) {
-                    ampsResultDiv.textContent = translations[currentLang].errorInvalidPowerFactor; error = true;
+            } else { 
+                 if (ampsResultDiv.innerHTML.includes(translations[currentLang === 'ar' ? 'en' : 'ar'].errorInvalidAmps.substring(0,10))) {
+                    ampsResultDiv.innerHTML = `<p style="color:${errorColor}">${translations[currentLang].errorInvalidAmps}</p>`; error = true;
+                } else if (ampsResultDiv.innerHTML.includes(translations[currentLang === 'ar' ? 'en' : 'ar'].errorInvalidVolts.substring(0,10))) {
+                    ampsResultDiv.innerHTML = `<p style="color:${errorColor}">${translations[currentLang].errorInvalidVolts}</p>`; error = true;
+                } else if (ampsResultDiv.innerHTML.includes(translations[currentLang === 'ar' ? 'en' : 'ar'].errorInvalidPowerFactor.substring(0,10))) {
+                    ampsResultDiv.innerHTML = `<p style="color:${errorColor}">${translations[currentLang].errorInvalidPowerFactor}</p>`; error = true;
                 }
-                 if(error) {
-                    ampsResultDiv.style.color = errorColor;
-                    return;
-                }
+                 if(error) {triggerResultAnimation(ampsResultDiv); return;}
             }
 
-
-            if (!isNaN(amps) && amps > 0 && !isNaN(volts) && volts > 0 && !isNaN(powerFactor) && powerFactor > 0 && powerFactor <= 1) {
+            if (!isNaN(amps) && amps > 0 && !isNaN(volts) && volts > 0 && !isNaN(powerFactor) && powerFactor >= 0 && powerFactor <= 1) {
                 const watts = volts * amps * powerFactor;
-                const horsepower = watts / 746;
+                const horsepower = watts / 746; 
                 ampsResultDiv.innerHTML = translations[currentLang].ampsResultText(horsepower);
                 ampsResultDiv.style.color = resultBoxBaseColor;
+                triggerResultAnimation(ampsResultDiv);
             } else if (!isLanguageChange) {
                  ampsResultDiv.innerHTML = "";
+                 ampsResultDiv.classList.remove('visible');
             }
         }
+
+        function displayRefrigerantInfo(isLanguageChange = false) {
+            const select = document.getElementById('refrigerantSelectInfo');
+            const resultDiv = document.getElementById('refrigerantInfoResult');
+            const refrigerantId = select.value;
+            const lang = translations[currentLang];
+
+            if (!refrigerantId) {
+                resultDiv.innerHTML = `<p id="refrigerantInfoPlaceholder" class="info-text">${lang.refrigerantInfoPlaceholder}</p>`;
+                triggerResultAnimation(resultDiv);
+                return;
+            }
+
+            const refrigerant = refrigerants.find(r => r.id === refrigerantId);
+            if (refrigerant) {
+                let tableHTML = '<table class="info-table"><tbody>';
+                tableHTML += `<tr><th>${lang.refrigerantNameLabel}</th><td>${refrigerant.name}</td></tr>`;
+                tableHTML += `<tr><th>${lang.refrigerantTypeLabel}</th><td>${refrigerant.type}</td></tr>`;
+                tableHTML += `<tr><th>${lang.boilingPointCLabel}</th><td>${refrigerant.boilingPointC}°C</td></tr>`;
+                tableHTML += `<tr><th>${lang.boilingPointFLabel}</th><td>${refrigerant.boilingPointF}°F</td></tr>`;
+                tableHTML += `<tr><th>${lang.pressureGroupLabel}</th><td>${refrigerant.pressureGroup}</td></tr>`;
+                tableHTML += '</tbody></table>';
+                resultDiv.innerHTML = tableHTML;
+                triggerResultAnimation(resultDiv);
+            }
+        }
+        
+        function displayCompressorInfo(isLanguageChange = false) {
+            const select = document.getElementById('compressorTypeSelect');
+            const resultDiv = document.getElementById('compressorInfoResult');
+            const compressorId = select.value;
+            const lang = translations[currentLang];
+
+            if (!compressorId) {
+                resultDiv.innerHTML = `<p id="compressorInfoPlaceholder" class="info-text">${lang.compressorInfoPlaceholder}</p>`;
+                triggerResultAnimation(resultDiv);
+                return;
+            }
+            const compressor = compressors.find(c => c.id === compressorId);
+            if (compressor) {
+                let tableHTML = '<table class="info-table"><tbody>';
+                tableHTML += `<tr><th>${lang.compressorNameLabel}</th><td>${currentLang === 'ar' ? compressor.name_ar : compressor.name_en}</td></tr>`;
+                tableHTML += `<tr><th>${lang.compressorCapacityRangeLabel}</th><td>${currentLang === 'ar' ? compressor.capacity_ar : compressor.capacity_en}</td></tr>`;
+                tableHTML += `<tr><th>${lang.compressorApplicationsLabel}</th><td>${currentLang === 'ar' ? compressor.applications_ar : compressor.applications_en}</td></tr>`;
+                tableHTML += '</tbody></table>';
+                resultDiv.innerHTML = tableHTML;
+                triggerResultAnimation(resultDiv);
+            }
+        }
+
+
+        function calculateCapillaryTube(isLanguageChange = false) {
+            const capacityInput = document.getElementById('compressorCapacity');
+            const refrigerantSelect = document.getElementById('refrigerantSelectCalc');
+            const resultDiv = document.getElementById('capillaryResult');
+            const lang = translations[currentLang];
+            const resultBoxBaseColor = htmlElement.classList.contains('dark') ? '#e0e7ff' : '#3730a3';
+            const errorColor = '#ef4444';
+
+            const capacityHP = parseFloat(capacityInput.value);
+            const refrigerantId = refrigerantSelect.value;
+            
+            let error = false;
+            let errorMsgKey = "";
+
+            if (!isLanguageChange) {
+                if (isNaN(capacityHP) || capacityHP <= 0) { errorMsgKey = "errorInvalidCapacity"; error = true; }
+                else if (!refrigerantId) { 
+                    resultDiv.innerHTML = `<p style="color:${errorColor}">${lang.selectRefrigerantPrompt}</p>`; 
+                    triggerResultAnimation(resultDiv);
+                    return;
+                }
+                if(error) {
+                    resultDiv.innerHTML = `<p style="color:${errorColor}">${lang[errorMsgKey]}</p>`;
+                    triggerResultAnimation(resultDiv);
+                    return;
+                }
+            } else { 
+                 if (resultDiv.innerHTML.includes(translations[currentLang === 'ar' ? 'en' : 'ar'].errorInvalidCapacity.substring(0,10))) {
+                    resultDiv.innerHTML = `<p style="color:${errorColor}">${lang.errorInvalidCapacity}</p>`; error = true;
+                } else if (resultDiv.innerHTML.includes(translations[currentLang === 'ar' ? 'en' : 'ar'].selectRefrigerantPrompt.substring(0,10))) {
+                     resultDiv.innerHTML = `<p style="color:${errorColor}">${lang.selectRefrigerantPrompt}</p>`; error = true;
+                }
+                 if(error) {triggerResultAnimation(resultDiv); return;}
+                 else if (!resultDiv.innerHTML.includes("<strong>")) { 
+                    if (!refrigerantId && !capacityHP) { 
+                        resultDiv.innerHTML = "";
+                        resultDiv.classList.remove('visible');
+                        return;
+                    }
+                 }
+            }
+
+            if (!isNaN(capacityHP) && capacityHP > 0 && refrigerantId) {
+                const refrigerant = refrigerants.find(r => r.id === refrigerantId);
+                if (!refrigerant) { 
+                    resultDiv.innerHTML = `<p style="color:${errorColor}">Error: Refrigerant data not found.</p>`;
+                    triggerResultAnimation(resultDiv);
+                    return;
+                }
+                let baseFactor = 0.8; 
+                switch (refrigerant.pressureGroup) {
+                    case "Low": baseFactor = 0.9; break;
+                    case "Medium": baseFactor = 0.8; break;
+                    case "High": baseFactor = 0.7; break;
+                    case "Very High": baseFactor = 0.6; break;
+                }
+                const diameterMM = baseFactor * Math.pow(capacityHP, 0.42) * (1 + (Math.random() - 0.5) * 0.05); 
+                const diameterIN = diameterMM / 25.4;
+
+                resultDiv.innerHTML = lang.capillaryResultText(diameterMM, diameterIN);
+                resultDiv.style.color = resultBoxBaseColor;
+                triggerResultAnimation(resultDiv);
+            } else if (!isLanguageChange) {
+                 resultDiv.innerHTML = ""; 
+                 resultDiv.classList.remove('visible');
+            }
+        }
+
 
         function applyTheme(isDark) {
             if (isDark) {
@@ -458,8 +874,14 @@
                 themeToggleDarkIcon.classList.add('hidden');
                 themeToggleLightIcon.classList.remove('hidden');
             }
-            if (document.getElementById('litersResult').innerHTML) convertLitersToCubicFeet(true);
-            if (document.getElementById('ampsResult').innerHTML) convertAmpsToHorsepower(true);
+            const litersResultDiv = document.getElementById('litersResult');
+            if (litersResultDiv.innerHTML && !litersResultDiv.querySelector('p[style*="color"]')) convertLitersToCubicFeet(true);
+            
+            const ampsResultDiv = document.getElementById('ampsResult');
+            if (ampsResultDiv.innerHTML && !ampsResultDiv.querySelector('p[style*="color"]')) convertAmpsToHorsepower(true);
+            
+            const capillaryResultDiv = document.getElementById('capillaryResult');
+            if (capillaryResultDiv.innerHTML && !capillaryResultDiv.querySelector('p[style*="color"]')) calculateCapillaryTube(true);
         }
 
         // --- Event Listeners ---
@@ -476,15 +898,18 @@
         });
         
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-            if (!('color-theme' in localStorage)) {
+            if (!('color-theme' in localStorage)) { 
                 applyTheme(event.matches);
             }
         });
 
+        document.getElementById('refrigerantSelectInfo').addEventListener('change', () => displayRefrigerantInfo(false));
+        document.getElementById('compressorTypeSelect').addEventListener('change', () => displayCompressorInfo(false));
+
+
         // --- Initialization ---
         yearSpan.textContent = new Date().getFullYear();
         
-        // Apply saved theme or system preference
         if (localStorage.getItem('color-theme') === 'dark' ||
             (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             applyTheme(true);
@@ -492,8 +917,8 @@
             applyTheme(false);
         }
         
-        applyTranslations(); // Apply initial language
-        showConverter('liters'); // Show default converter
+        applyTranslations(); 
+        showTool('liters'); 
     </script>
 </body>
 </html>
