@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">محول وحدات الثلاجات</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif; /* Default to Arabic font */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        html[lang="en"] body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Light Mode Default Styles */
+        body {
+            background-color: #f0f4f8;
+            color: #1f2937;
+        }
+        .converter-section {
+            background-color: #ffffff;
+            border-color: #e5e7eb;
+        }
+        .tab-button {
+            color: #4a5568;
+            border-bottom-color: transparent;
+        }
+        .tab-button.active-tab {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+        .form-input {
+            background-color: #ffffff;
+            border-color: #d1d5db;
+            color: #1f2937;
+        }
+        .form-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        .form-label {
+            color: #374151;
+        }
+        .convert-button {
+            background-color: #2563eb;
+            color: white;
+        }
+        .convert-button:hover {
+            background-color: #1d4ed8;
+        }
+        .result-box {
+            background-color: #eef2ff;
+            border-color: #c7d2fe;
+            color: #3730a3;
+        }
+        .info-text {
+            color: #6b7280;
+        }
+        .header-title {
+            color: #2563eb;
+        }
+        .header-subtitle {
+            color: #4b5567;
+        }
+        .footer-text {
+            color: #6b7280;
+        }
+        .control-button { /* Common style for theme and lang buttons */
+            background-color: #e5e7eb;
+            color: #374151;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .control-button:hover {
+            background-color: #d1d5db;
+        }
+
+
+        /* Dark Mode Styles */
+        html.dark body {
+            background-color: #1f2937;
+            color: #d1d5db;
+        }
+        html.dark .converter-section {
+            background-color: #374151;
+            border-color: #4b5567;
+        }
+        html.dark .tab-button {
+            color: #9ca3af;
+        }
+        html.dark .tab-button.active-tab {
+            color: #60a5fa;
+            border-bottom-color: #60a5fa;
+        }
+        html.dark .form-input {
+            background-color: #4b5567;
+            border-color: #52525b;
+            color: #f3f4f6;
+        }
+        html.dark .form-input::placeholder {
+            color: #9ca3af;
+        }
+        html.dark .form-input:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+        }
+        html.dark .form-label {
+            color: #d1d5db;
+        }
+        html.dark .convert-button {
+            background-color: #3b82f6;
+            color: white;
+        }
+        html.dark .convert-button:hover {
+            background-color: #2563eb;
+        }
+        html.dark .result-box {
+            background-color: #3730a3;
+            border-color: #4f46e5;
+            color: #e0e7ff;
+        }
+        html.dark .info-text {
+            color: #9ca3af;
+        }
+        html.dark .header-title {
+            color: #60a5fa;
+        }
+        html.dark .header-subtitle {
+            color: #9ca3af;
+        }
+        html.dark .footer-text {
+            color: #9ca3af;
+        }
+        html.dark .control-button {
+            background-color: #4b5567;
+            color: #e5e7eb;
+        }
+        html.dark .control-button:hover {
+            background-color: #52525b;
+        }
+
+
+        .converter-section {
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            animation: fadeIn 0.5s ease-out;
+            border: 1px solid;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid;
+            border-radius: 0.5rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+        }
+        /* Ensure LTR for number inputs always */
+        input[type="number"] {
+            text-align: left;
+            direction: ltr;
+        }
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border: none;
+            background-color: transparent;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid;
+        }
+        .result-box {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid;
+            font-weight: 600;
+            text-align: center;
+            min-height: 50px;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto p-4 md:p-8 max-w-2xl min-h-screen flex flex-col justify-center">
+        <div class="absolute top-4 right-4 flex space-x-2 rtl:space-x-reverse">
+            <button id="language-toggle" type="button" class="control-button text-sm p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 font-medium w-10 h-10 flex items-center justify-center">
+                EN
+            </button>
+            <button id="theme-toggle" type="button" class="control-button text-sm p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600">
+                <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+            </button>
+        </div>
+
+        <header class="text-center mb-8 md:mb-12">
+            <h1 id="mainHeader" class="text-3xl md:text-4xl font-bold header-title">محول وحدات الثلاجات الذكي</h1>
+            <p id="subHeader" class="header-subtitle mt-2 text-lg">حوّل بسهولة بين وحدات السعة والقدرة لثلاجتك</p>
+        </header>
+
+        <div class="mb-6 flex justify-center border-b border-gray-300 dark:border-gray-700">
+            <button id="tabLiters" class="tab-button active-tab" onclick="showConverter('liters')">لتر ← قدم مكعب</button>
+            <button id="tabAmps" class="tab-button" onclick="showConverter('amps')">أمبير ← حصان</button>
+        </div>
+
+        <div id="convertersContainer">
+            <div id="litersConverter" class="converter-section">
+                <h2 id="litersConverterTitle" class="text-2xl font-semibold mb-6 text-center">تحويل سعة الثلاجة (لتر إلى قدم مكعب)</h2>
+                <div>
+                    <label for="litersInput" id="litersInputLabel" class="form-label">أدخل السعة باللتر:</label>
+                    <input type="number" id="litersInput" class="form-input" placeholder="مثال: 300">
+                </div>
+                <button id="convertLitersButton" onclick="convertLitersToCubicFeet()" class="convert-button mt-6">تحويل إلى قدم مكعب</button>
+                <div id="litersResult" class="result-box"></div>
+            </div>
+
+            <div id="ampsConverter" class="converter-section hidden">
+                <h2 id="ampsConverterTitle" class="text-2xl font-semibold mb-6 text-center">تقدير قدرة الموتور (أمبير إلى حصان)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="ampsInput" id="ampsInputLabel" class="form-label">شدة التيار (أمبير):</label>
+                        <input type="number" id="ampsInput" class="form-input" placeholder="مثال: 1.5">
+                    </div>
+                    <div>
+                        <label for="voltsInput" id="voltsInputLabel" class="form-label">الجهد (فولت):</label>
+                        <input type="number" id="voltsInput" class="form-input" value="220">
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label for="powerFactorInput" id="powerFactorInputLabel" class="form-label">معامل القدرة (Power Factor):</label>
+                    <input type="number" id="powerFactorInput" class="form-input" value="0.8" step="0.01" min="0" max="1">
+                    <p id="powerFactorInfo" class="info-text">القيمة النموذجية للمحركات تتراوح بين 0.7 و 0.9. هذه القيمة تقديرية.</p>
+                </div>
+                <button id="convertAmpsButton" onclick="convertAmpsToHorsepower()" class="convert-button mt-6">تقدير القدرة بالحصان</button>
+                <div id="ampsResult" class="result-box"></div>
+                <p id="ampsNote" class="info-text mt-4 text-center">ملاحظة: هذه القيمة هي تقدير تقريبي لقدرة الموتور بالحصان وقد تختلف بناءً على كفاءة الموتور وعوامل أخرى.</p>
+            </div>
+        </div>
+
+        <footer class="text-center mt-12 text-sm footer-text">
+            <p>&copy; <span id="currentYear"></span> - <span id="footerText">محول وحدات الثلاجات. تصميم وتطوير مروان  المغازي.</span></p>
+        </footer>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const yearSpan = document.getElementById('currentYear');
+        const litersConverterDiv = document.getElementById('litersConverter');
+        const ampsConverterDiv = document.getElementById('ampsConverter');
+        const tabLitersButton = document.getElementById('tabLiters');
+        const tabAmpsButton = document.getElementById('tabAmps');
+        const themeToggleButton = document.getElementById('theme-toggle');
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+        const languageToggleButton = document.getElementById('language-toggle');
+        const htmlElement = document.documentElement;
+
+        // --- Translations ---
+        const translations = {
+            ar: {
+                pageTitle: "محول وحدات الثلاجات",
+                mainHeader: "محول وحدات الثلاجات الذكي",
+                subHeader: "حوّل بسهولة بين وحدات السعة والقدرة لثلاجتك",
+                tabLiters: "لتر ← قدم مكعب",
+                tabAmps: "أمبير ← حصان",
+                litersConverterTitle: "تحويل سعة الثلاجة (لتر إلى قدم مكعب)",
+                litersInputLabel: "أدخل السعة باللتر:",
+                litersInputPlaceholder: "مثال: 300",
+                convertLitersButton: "تحويل إلى قدم مكعب",
+                ampsConverterTitle: "تقدير قدرة الموتور (أمبير إلى حصان)",
+                ampsInputLabel: "شدة التيار (أمبير):",
+                ampsInputPlaceholder: "مثال: 1.5",
+                voltsInputLabel: "الجهد (فولت):",
+                powerFactorInputLabel: "معامل القدرة (Power Factor):",
+                powerFactorInfo: "القيمة النموذجية للمحركات تتراوح بين 0.7 و 0.9. هذه القيمة تقديرية.",
+                convertAmpsButton: "تقدير القدرة بالحصان",
+                ampsNote: "ملاحظة: هذه القيمة هي تقدير تقريبي لقدرة الموتور بالحصان وقد تختلف بناءً على كفاءة الموتور وعوامل أخرى.",
+                footerText: "محول وحدات الثلاجات. تصميم وتطوير مروان المغازي.",
+                errorInvalidLiters: "الرجاء إدخال قيمة صالحة للسعة باللتر.",
+                errorInvalidAmps: "الرجاء إدخال قيمة صالحة لشدة التيار.",
+                errorInvalidVolts: "الرجاء إدخال قيمة صالحة للجهد.",
+                errorInvalidPowerFactor: "الرجاء إدخال قيمة صالحة لمعامل القدرة (بين 0 و 1).",
+                litersResultText: (liters, cubicFeet) => `${liters} لتر ≈ <strong>${cubicFeet.toFixed(3)}</strong> قدم مكعب`,
+                ampsResultText: (horsepower) => `القدرة التقديرية ≈ <strong>${horsepower.toFixed(3)}</strong> حصان`,
+                langToggle: "EN"
+            },
+            en: {
+                pageTitle: "Refrigerator Unit Converter",
+                mainHeader: "Smart Refrigerator Unit Converter",
+                subHeader: "Easily convert capacity and power units for your refrigerator",
+                tabLiters: "Liters → Cubic Ft",
+                tabAmps: "Amps → Horsepower",
+                litersConverterTitle: "Convert Refrigerator Capacity (Liters to Cubic Feet)",
+                litersInputLabel: "Enter capacity in Liters:",
+                litersInputPlaceholder: "Example: 300",
+                convertLitersButton: "Convert to Cubic Feet",
+                ampsConverterTitle: "Estimate Motor Power (Amps to Horsepower)",
+                ampsInputLabel: "Current (Amps):",
+                ampsInputPlaceholder: "Example: 1.5",
+                voltsInputLabel: "Voltage (Volts):",
+                powerFactorInputLabel: "Power Factor:",
+                powerFactorInfo: "Typical value for motors is between 0.7 and 0.9. This is an estimate.",
+                convertAmpsButton: "Estimate Horsepower",
+                ampsNote: "Note: This is an approximate estimation of motor horsepower and may vary based on motor efficiency and other factors.",
+                footerText: "Refrigerator Unit Converter. Designed & Developed by Marwan Elmoghazy.",
+                errorInvalidLiters: "Please enter a valid capacity in liters.",
+                errorInvalidAmps: "Please enter a valid current in amps.",
+                errorInvalidVolts: "Please enter a valid voltage.",
+                errorInvalidPowerFactor: "Please enter a valid power factor (between 0 and 1).",
+                litersResultText: (liters, cubicFeet) => `${liters} Liters ≈ <strong>${cubicFeet.toFixed(3)}</strong> Cubic Feet`,
+                ampsResultText: (horsepower) => `Estimated Power ≈ <strong>${horsepower.toFixed(3)}</strong> HP`,
+                langToggle: "ع" // Short for العربية
+            }
+        };
+
+        let currentLang = localStorage.getItem('language') || 'ar';
+
+        // --- Functions ---
+        function applyTranslations() {
+            const lang = translations[currentLang];
+            document.title = lang.pageTitle;
+            htmlElement.lang = currentLang;
+            htmlElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+
+            document.getElementById('mainHeader').textContent = lang.mainHeader;
+            document.getElementById('subHeader').textContent = lang.subHeader;
+            tabLitersButton.textContent = lang.tabLiters;
+            tabAmpsButton.textContent = lang.tabAmps;
+            document.getElementById('litersConverterTitle').textContent = lang.litersConverterTitle;
+            document.getElementById('litersInputLabel').textContent = lang.litersInputLabel;
+            document.getElementById('litersInput').placeholder = lang.litersInputPlaceholder;
+            document.getElementById('convertLitersButton').textContent = lang.convertLitersButton;
+            document.getElementById('ampsConverterTitle').textContent = lang.ampsConverterTitle;
+            document.getElementById('ampsInputLabel').textContent = lang.ampsInputLabel;
+            document.getElementById('ampsInput').placeholder = lang.ampsInputPlaceholder;
+            document.getElementById('voltsInputLabel').textContent = lang.voltsInputLabel;
+            document.getElementById('powerFactorInputLabel').textContent = lang.powerFactorInputLabel;
+            document.getElementById('powerFactorInfo').textContent = lang.powerFactorInfo;
+            document.getElementById('convertAmpsButton').textContent = lang.convertAmpsButton;
+            document.getElementById('ampsNote').textContent = lang.ampsNote;
+            document.getElementById('footerText').textContent = lang.footerText;
+            languageToggleButton.textContent = lang.langToggle;
+
+            // Re-run conversions to update result text language if results are visible
+            if (document.getElementById('litersResult').innerHTML) convertLitersToCubicFeet(true);
+            if (document.getElementById('ampsResult').innerHTML) convertAmpsToHorsepower(true);
+        }
+
+
+        function showConverter(type) {
+            if (type === 'liters') {
+                litersConverterDiv.classList.remove('hidden');
+                ampsConverterDiv.classList.add('hidden');
+                tabLitersButton.classList.add('active-tab');
+                tabAmpsButton.classList.remove('active-tab');
+            } else if (type === 'amps') {
+                ampsConverterDiv.classList.remove('hidden');
+                litersConverterDiv.classList.add('hidden');
+                tabAmpsButton.classList.add('active-tab');
+                tabLitersButton.classList.remove('active-tab');
+            }
+        }
+
+        function convertLitersToCubicFeet(isLanguageChange = false) {
+            const litersInput = document.getElementById('litersInput');
+            const litersResultDiv = document.getElementById('litersResult');
+            const liters = parseFloat(litersInput.value);
+            const resultBoxBaseColor = htmlElement.classList.contains('dark') ? '#e0e7ff' : '#3730a3';
+            const errorColor = '#ef4444';
+
+            if (!isLanguageChange && (isNaN(liters) || liters < 0)) {
+                litersResultDiv.textContent = translations[currentLang].errorInvalidLiters;
+                litersResultDiv.style.color = errorColor;
+                return;
+            }
+             if (isLanguageChange && (isNaN(liters) || liters < 0) && litersResultDiv.textContent.includes(translations[currentLang === 'ar' ? 'en' : 'ar'].errorInvalidLiters.substring(0,10))) {
+                litersResultDiv.textContent = translations[currentLang].errorInvalidLiters;
+                litersResultDiv.style.color = errorColor;
+                return;
+            }
+
+
+            if (!isNaN(liters) && liters >=0) {
+                 const cubicFeet = liters * 0.0353147;
+                 litersResultDiv.innerHTML = translations[currentLang].litersResultText(liters, cubicFeet);
+                 litersResultDiv.style.color = resultBoxBaseColor;
+            } else if (!isLanguageChange) { // Clear if input is invalid and not just a lang change
+                litersResultDiv.innerHTML = "";
+            }
+        }
+
+        function convertAmpsToHorsepower(isLanguageChange = false) {
+            const ampsInput = document.getElementById('ampsInput');
+            const voltsInput = document.getElementById('voltsInput');
+            const powerFactorInput = document.getElementById('powerFactorInput');
+            const ampsResultDiv = document.getElementById('ampsResult');
+            const resultBoxBaseColor = htmlElement.classList.contains('dark') ? '#e0e7ff' : '#3730a3';
+            const errorColor = '#ef4444';
+
+            const amps = parseFloat(ampsInput.value);
+            const volts = parseFloat(voltsInput.value);
+            const powerFactor = parseFloat(powerFactorInput.value);
+            let error = false;
+
+            if (!isLanguageChange) {
+                if (isNaN(amps) || amps <= 0) {
+                    ampsResultDiv.textContent = translations[currentLang].errorInvalidAmps;
+                    error = true;
+                } else if (isNaN(volts) || volts <= 0) {
+                    ampsResultDiv.textContent = translations[currentLang].errorInvalidVolts;
+                    error = true;
+                } else if (isNaN(powerFactor) || powerFactor <= 0 || powerFactor > 1) {
+                    ampsResultDiv.textContent = translations[currentLang].errorInvalidPowerFactor;
+                    error = true;
+                }
+                if(error) {
+                    ampsResultDiv.style.color = errorColor;
+                    return;
+                }
+            } else { // Handle language change for existing error messages
+                 if (ampsResultDiv.textContent.includes(translations[currentLang === 'ar' ? 'en' : 'ar'].errorInvalidAmps.substring(0,10))) {
+                    ampsResultDiv.textContent = translations[currentLang].errorInvalidAmps; error = true;
+                } else if (ampsResultDiv.textContent.includes(translations[currentLang === 'ar' ? 'en' : 'ar'].errorInvalidVolts.substring(0,10))) {
+                    ampsResultDiv.textContent = translations[currentLang].errorInvalidVolts; error = true;
+                } else if (ampsResultDiv.textContent.includes(translations[currentLang === 'ar' ? 'en' : 'ar'].errorInvalidPowerFactor.substring(0,10))) {
+                    ampsResultDiv.textContent = translations[currentLang].errorInvalidPowerFactor; error = true;
+                }
+                 if(error) {
+                    ampsResultDiv.style.color = errorColor;
+                    return;
+                }
+            }
+
+
+            if (!isNaN(amps) && amps > 0 && !isNaN(volts) && volts > 0 && !isNaN(powerFactor) && powerFactor > 0 && powerFactor <= 1) {
+                const watts = volts * amps * powerFactor;
+                const horsepower = watts / 746;
+                ampsResultDiv.innerHTML = translations[currentLang].ampsResultText(horsepower);
+                ampsResultDiv.style.color = resultBoxBaseColor;
+            } else if (!isLanguageChange) {
+                 ampsResultDiv.innerHTML = "";
+            }
+        }
+
+        function applyTheme(isDark) {
+            if (isDark) {
+                htmlElement.classList.add('dark');
+                themeToggleDarkIcon.classList.remove('hidden');
+                themeToggleLightIcon.classList.add('hidden');
+            } else {
+                htmlElement.classList.remove('dark');
+                themeToggleDarkIcon.classList.add('hidden');
+                themeToggleLightIcon.classList.remove('hidden');
+            }
+            if (document.getElementById('litersResult').innerHTML) convertLitersToCubicFeet(true);
+            if (document.getElementById('ampsResult').innerHTML) convertAmpsToHorsepower(true);
+        }
+
+        // --- Event Listeners ---
+        themeToggleButton.addEventListener('click', function() {
+            const isDark = htmlElement.classList.toggle('dark');
+            localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+            applyTheme(isDark);
+        });
+
+        languageToggleButton.addEventListener('click', function() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            localStorage.setItem('language', currentLang);
+            applyTranslations();
+        });
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (!('color-theme' in localStorage)) {
+                applyTheme(event.matches);
+            }
+        });
+
+        // --- Initialization ---
+        yearSpan.textContent = new Date().getFullYear();
+        
+        // Apply saved theme or system preference
+        if (localStorage.getItem('color-theme') === 'dark' ||
+            (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            applyTheme(true);
+        } else {
+            applyTheme(false);
+        }
+        
+        applyTranslations(); // Apply initial language
+        showConverter('liters'); // Show default converter
+    </script>
+</body>
+</html>
+
